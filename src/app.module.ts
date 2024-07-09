@@ -4,14 +4,13 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { TasksModule } from './tasks/tasks.module';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url:'mongodb://localhost/nest',
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      type: 'postgres',
+      url:'localhost:',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
@@ -19,6 +18,7 @@ import { TasksModule } from './tasks/tasks.module';
     TasksModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtAuthGuard],
+  exports:[JwtAuthGuard]
 })
 export class AppModule {}

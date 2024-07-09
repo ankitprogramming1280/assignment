@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { CreateUserDto } from "src/dtos/user.dto";
 import { User } from "src/entities/user.entity";
 import { Repository } from "typeorm";
 
@@ -26,8 +27,9 @@ export class UserRepository{
         })
     }
 
-    async create(user: any){
+    async create(user: CreateUserDto){
         const newUser:  User = new User()
+        newUser.password = user.password
         newUser.age = user.age
         newUser.email = user.email
         newUser.firstName = user.firstName

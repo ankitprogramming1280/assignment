@@ -19,7 +19,7 @@ export class JwtAuthService{
 
     async verify(token : string){
         const payload = await this.jwtService.verifyAsync(token,{
-            secret:'gdh'
+            secret:ACCESS_TOKEN_SECRET
         })
         return payload? payload: null
     }
