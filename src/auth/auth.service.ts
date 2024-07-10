@@ -3,7 +3,7 @@ import { JwtAuthService } from './jwt.service';
 import { UserRepository } from './auth.repository';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
-import { CreateUserDto, LoginUserDto } from 'src/dtos/user.dto';
+import { CreateUserDto, LoginUserDto, UserOutputDto } from 'src/dtos/user.dto';
 import { HASHING_SALT_ROUNDS } from 'src/core/constants';
 
 @Injectable()
@@ -16,6 +16,7 @@ export class AuthService {
     async getuser(userId: string){
         return await this.userRepository.findOneById(userId)
     }
+
     async login(data: LoginUserDto){
         const user : User = await this.userRepository.findOneByEmail(data.email)
         if(!user){
@@ -42,10 +43,26 @@ export class AuthService {
         }
         const hashedPassword = await this.hashPassword(user.password)
         user.password = hashedPassword
-        return await this.userRepository.create(user)
+        return new UserOutputDto(await this.userRepository.create(user)) 
     }
 
     async hashPassword(password: string){
         return  bcrypt.hash(password,HASHING_SALT_ROUNDS)
+    }
+
+    async refreshToken(refreshToken: string){
+        const payload = await this.jwtService.verifyRefresh(refreshToken)
+        if(!payload){
+            throw new HttpException('Invalid user', HttpStatus.BAD_REQUEST)
+        }
+        const user: User = await this.userRepository.findOneById(payload.id)
+        if(!user){
+            throw new HttpException('Invalid Request', HttpStatus.BAD_REQUEST)
+        }
+        const token = await this.jwtService.sign(user)
+        return {
+            message: 'Token Refreshed',
+            ...token
+        }
     }
 }

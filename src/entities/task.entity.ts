@@ -7,14 +7,23 @@ export class Task{
     @PrimaryGeneratedColumn('uuid')
     id: string
 
-    @Column()
+    @Column({
+        nullable: false
+    })
     title: string
 
-    @Column()
+    @Column({
+        nullable: false
+    })
     description: string
 
-    @Column({enum: STATUS})
-    status: string
+    @Column({enum: STATUS, default: STATUS.Pending})
+    status: STATUS
+
+    @Column({
+        nullable: false
+    })
+    dueDate: Date
 
     @CreateDateColumn()
     createdAt: Date

@@ -23,4 +23,11 @@ export class JwtAuthService{
         })
         return payload? payload: null
     }
+
+    async verifyRefresh(refreshToken: string){
+        const payload = await this.jwtService.verifyAsync(refreshToken,{
+            secret:REFRESH_TOKEN_SECRET
+        })
+        return payload? payload:null
+    }
 }

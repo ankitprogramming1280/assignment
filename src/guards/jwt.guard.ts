@@ -8,14 +8,14 @@ export class JwtAuthGuard implements CanActivate{
     constructor(
         private readonly jwtService : JwtAuthService
     ){}
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    async canActivate(context: ExecutionContext):Promise<boolean> {
         const request: Request = context.switchToHttp().getRequest()
-        const token = request.headers.authorization.split(' ')[1]
+        const token = request?.headers?.authorization?.split(' ')[1]
         if(!token){
             throw new UnauthorizedException('User Not Found')
         }
         try{
-            const payload = this.jwtService.verify(token)
+            const payload = await this.jwtService.verify(token)
             request['user'] = payload
         }
         catch(err){

@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { TaskRepository } from './task.repository';
-import { CreateTaskDto, UpdateTaskDto } from 'src/dtos/task.dto';
+import { CreateTaskDto, TaskOutputDto, UpdateTaskDto } from 'src/dtos/task.dto';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/entities/user.entity';
@@ -15,17 +15,19 @@ export class TasksService {
 
     async createTask(req: Request, createTaskDto: CreateTaskDto){
         const user: User = await this.authService.getuser(req['user'].id)
-        return await this.taskRepository.create(createTaskDto, user)
+        return new TaskOutputDto(await this.taskRepository.create(createTaskDto, user)) 
     }
 
     async fetchTaskById(req:Request, taskId: string){
         const task: Task = await this.verifyUserWithTask(taskId,req)
-        return task;
+        return  new TaskOutputDto(task);
     }
 
     async fetchTasks(req:Request){
         const tasks = await this.taskRepository.getTasksByUser(req['user'].id)
-        return tasks
+        return tasks.map((task)=>{
+            return new TaskOutputDto(task)
+        })
     }
 
     async updateTask(req: Request,taskId: string, updateTaskDto: UpdateTaskDto){
@@ -33,7 +35,7 @@ export class TasksService {
         task.description = updateTaskDto?.description
         task.status = updateTaskDto?.staus
         const updatedTask = await this.taskRepository.updateTask(task)
-        return updatedTask
+        return new TaskOutputDto(updatedTask)
     }
 
     async deleteTask(req: Request, taskId: string){

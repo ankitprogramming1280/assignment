@@ -10,7 +10,11 @@ import { JwtAuthGuard } from './guards/jwt.guard';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url:'localhost:',
+      host: "localhost",
+      port: 5432,
+      username: "postgres",
+      password: "postgres",
+      database: "assignment",
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),

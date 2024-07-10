@@ -21,12 +21,12 @@ export class TaskRepository{
     }
 
     async getTaskById(id: string){
-        return await this.taskRepo.find({
+        return await this.taskRepo.findOne({
             where: {
                 id
             },
             relations:['user']
-        })[0]
+        })
     }
 
     async getTasksByUser(userId: string){
